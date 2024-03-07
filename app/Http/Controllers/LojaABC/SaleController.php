@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\LojaABC;
 
+use App\Commands\CancelSaleCommand;
+use App\Commands\CommandBus;
+use App\Commands\CreateSaleCommand;
+use App\Helpers\Helper;
 use App\Http\Controllers\ApiError;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Exception;
 use App\Models\LojaABC\SaleItems;
 use App\Models\LojaABC\Sales;
+use App\Queries\GetSales;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
@@ -19,7 +24,7 @@ class SaleController extends Controller
         if(isset($request['sales_id']) and !empty($request['sales_id'])){
             return $this->show($request['sales_id']);
         }
-        $sales = Sales::where(['canceled_at' => NULL])->get(['sales_id','amount']);
+        $sales = Helper::arrayToObject(GetSales::getData());
 
         /**
          * TODO: Facade Validation dates, if don't recieved parameters search just today
@@ -51,14 +56,16 @@ class SaleController extends Controller
 
             if(isset($sale->products) and !empty($sale->products)){
 
-                $sale_new = Sales::create([
-                    'sales_id' => $sale->sales_id,
-                    'amount' => $sale->amount
-                ]);
+                $command = new CreateSaleCommand(
+                    $sale->sales_id,
+                    $sale->amount
+                );
+                $commandBus = new CommandBus();
+                $commandBus->handle($command);
 
-                SaleItems::putItems($sale_new->sales_id, $sale->products);
+                SaleItems::putItems($sale->sales_id, $sale->products);
 
-                Sales::calTotal($sale_new->sales_id,$request);
+                Sales::calTotal($sale->sales_id,$request);
                 /**
                  * TODO: Facade validator total greater zero
                  */
@@ -76,7 +83,7 @@ class SaleController extends Controller
      */
     public function show(string $id)
     {
-        $sale = $sales = Sales::where(['canceled_at' => NULL])->get(['sales_id','amount'])->where('sales_id','=', $id)->first();
+        $sale = Helper::arrayToObject(GetSales::getData($id));
 
         if (!$sale){
             return response([
@@ -116,7 +123,7 @@ class SaleController extends Controller
                 $id = $request['sales_id'];
             }
 
-            $sale = Sales::all(['sales_id','amount','canceled_at'])->whereNull('canceled_at')->where('sales_id','=', $id)->first();
+            $sale = Helper::arrayToObject(GetSales::getData($id));
 
             if (!$sale){
                 return response([
@@ -124,7 +131,9 @@ class SaleController extends Controller
                 ], 404);
             }
 
-            Sales::Where('sales_id',$id)->update((['canceled_at'=>now()]));
+            $command = new CancelSaleCommand( $sale->sales_id );
+            $commandBus = new CommandBus();
+            $commandBus->handle($command);
 
             return response([
                 'message' => ['Order#'.$id.' has been canceled.']

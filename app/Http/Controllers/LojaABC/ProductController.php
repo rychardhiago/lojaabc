@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\LojaABC;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\LojaABC\Products;
 use Illuminate\Http\Request;
+use App\Queries\GetProducts;
 
 class ProductController extends Controller
 {
@@ -13,7 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Products::all(['name','price','description'])->sortBy(['name','product_id']);
+
+        $products = Helper::arrayToObject(GetProducts::getData());
 
         // format expected
         foreach ($products as $product){

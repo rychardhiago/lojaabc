@@ -2,6 +2,8 @@
 
 namespace App\Models\LojaABC;
 
+use App\Commands\UpdateAmountSaleCommand;
+use App\Commands\CommandBus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,7 +26,9 @@ class Sales extends Model
             $total = $total + ($product->price * intval($product->amount));
         }
 
-        Sales::Where('sales_id',$sales_id)->update((['amount' => $total]));
+        $command = new UpdateAmountSaleCommand($sales_id, $total);
+        $commandBus = new CommandBus();
+        $commandBus->handle($command);
 
         return $total;
     }

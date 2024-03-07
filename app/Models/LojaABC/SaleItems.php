@@ -2,9 +2,12 @@
 
 namespace App\Models\LojaABC;
 
+use App\Commands\CreateSaleItemCommand;
+use App\Helpers\Helper;
+use App\Queries\GetItems;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use App\Commands\CommandBus;
 
 class SaleItems extends Model
 {
@@ -15,7 +18,7 @@ class SaleItems extends Model
     public static function getItems($sales_id, $formatted = true)
     {
 
-        $products = DB::table('sale_items')->where(['sales_id'=>$sales_id])->orderBy('product_id', 'ASC')->get(['product_id','name','price','amount']);
+        $products = Helper::arrayToObject(GetItems::getData($sales_id));
 
         // format expected
         if($formatted) {
@@ -27,16 +30,22 @@ class SaleItems extends Model
         return $products;
     }
 
+    public function callBus($command){
+        $this->commandBus->handle($command);
+    }
+
     public static function putItems($sales_id, $products)
     {
         foreach ($products as $product){
-            $item = new SaleItems();
-            $item->product_id = $product->product_id;
-            $item->name = $product->name;
-            $item->price = str_replace('.','',$product->price);
-            $item->amount = $product->amount;
-            $item->sales_id = $sales_id;
-            $item->save();
+            $command = new CreateSaleItemCommand(
+                $product->product_id,
+                $sales_id,
+                $product->name,
+                $product->price,
+                $product->amount
+            );
+            $commandBus = new CommandBus();
+            $commandBus->handle($command);
         }
     }
 

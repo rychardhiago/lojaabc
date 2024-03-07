@@ -39,13 +39,7 @@ class SaleItemsController extends Controller
 
                 SaleItems::putItems($sale->sales_id, $sale->products);
 
-                $total = Sales::calTotal($sale->sales_id);
-                if($total <= 0){
-                    return response([
-                        'message' => ['Error! The amount is expected greater zero.'],
-                        'sales' => $request->all()
-                    ], 400);
-                }
+                Sales::calTotal($sale->sales_id);
             }
         }
 
