@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\LojaABC\ProductsSeeder;
+use Database\Seeders\LojaABC\SalesItemsSeeder;
+use Database\Seeders\LojaABC\SalesSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

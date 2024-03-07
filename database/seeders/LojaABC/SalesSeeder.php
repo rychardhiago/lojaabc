@@ -1,9 +1,8 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\LojaABC;
 
-use App\Models\Sales;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\LojaABC\Sales;
 use Illuminate\Database\Seeder;
 
 class SalesSeeder extends Seeder

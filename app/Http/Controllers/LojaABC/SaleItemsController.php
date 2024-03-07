@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\LojaABC;
 
-use App\Models\SaleItems;
-use App\Models\Sales;
-use Faker\Extension\Helper;
-use Illuminate\Http\Request;
 use App\Helpers\SalesHelper;
+use App\Http\Controllers\Controller;
+use App\Models\LojaABC\SaleItems;
+use App\Models\LojaABC\Sales;
+use Illuminate\Http\Request;
 
 class SaleItemsController extends Controller
 {

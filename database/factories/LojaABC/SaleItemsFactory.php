@@ -1,15 +1,13 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\LojaABC;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Products>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\LojaABC\Products>
  */
-class ProductsFactory extends Factory
+class SaleItemsFactory extends Factory
 {
 
     /**
@@ -20,10 +18,11 @@ class ProductsFactory extends Factory
     public function definition(): array
     {
         return [
+            'sales_id' => fake()->numerify(),
             'product_id' => fake()->numerify(),
             'name' => fake()->name(),
             'price' => fake()->numerify(),
-            'description' => fake()->name()
+            'amount' => fake()->numerify(),
         ];
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\LojaABC\ProductController;
+use App\Http\Controllers\LojaABC\SaleController;
+use App\Http\Controllers\LojaABC\SaleItemsController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\SaleController;
-use App\Http\Controllers\SaleItemsController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +16,9 @@ use App\Http\Controllers\SaleItemsController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+/**
+ * Basic Auth to LojaABC
+ */
 Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('products', [ProductController::class, 'index']);

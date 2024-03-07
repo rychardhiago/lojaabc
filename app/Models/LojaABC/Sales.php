@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\LojaABC;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Sales extends Model
 {
@@ -15,19 +14,18 @@ class Sales extends Model
     /**
      * Update total of Sale by products
      */
-    protected function calTotal($sales_id)
+    protected function calTotal($sales_id,$request = null)
     {
         $total = 0;
 
         $products = SaleItems::getItems($sales_id, false);
 
         foreach ($products as $product){
-            $total = $total + ($product->price * $product->amount);
+            $total = $total + ($product->price * intval($product->amount));
         }
 
         Sales::Where('sales_id',$sales_id)->update((['amount' => $total]));
 
         return $total;
-
     }
 }

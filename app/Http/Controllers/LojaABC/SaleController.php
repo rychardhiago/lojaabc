@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\LojaABC;
 
-use App\Models\Products;
-use App\Models\Sales;
-use App\Models\SaleItems;
+use App\Http\Controllers\ApiError;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Exception;
+use App\Models\LojaABC\SaleItems;
+use App\Models\LojaABC\Sales;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
@@ -20,7 +22,7 @@ class SaleController extends Controller
         $sales = Sales::where(['canceled_at' => NULL])->get(['sales_id','amount']);
 
         /**
-         * TODO: Validation dates, if don't recieved parameters search just today
+         * TODO: Facade Validation dates, if don't recieved parameters search just today
          */
 
         foreach ($sales as $sale){
@@ -56,13 +58,10 @@ class SaleController extends Controller
 
                 SaleItems::putItems($sale_new->sales_id, $sale->products);
 
-                $total = Sales::calTotal($sale_new->sales_id);
-                if($total <= 0){
-                    return response([
-                        'message' => ['Error! The amount is expected greater zero.'],
-                        'sales' => $request->all()
-                    ], 400);
-                }
+                Sales::calTotal($sale_new->sales_id,$request);
+                /**
+                 * TODO: Facade validator total greater zero
+                 */
             }
         }
 
